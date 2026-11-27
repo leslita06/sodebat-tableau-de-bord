@@ -125,3 +125,14 @@ button.km:hover{border-color:#B9CFEC}
   #t-delai .r .n,#t-cpt .r .n{grid-column:1/-1;white-space:normal}
   #t-delai .r .t,#t-cpt .r .t{grid-column:1}
 }
+/* Alertes actionnables (27/11) */
+.al-ban{grid-column:1/-1;display:flex;gap:12px;align-items:flex-start;background:#EEF4FC;border:1px solid #D6E4F7;color:#1e3a5f;border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.5}
+.al-ban svg{color:#004AAD;flex:none;margin-top:2px}
+.li-al .rr{flex-direction:column;align-items:flex-end;gap:6px}
+.al-own{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:#64748b}
+.al-own svg{width:13px;height:13px}
+.al-b{display:inline-flex;align-items:center;gap:6px;border:1px solid #004AAD;color:#004AAD;background:#fff;border-radius:8px;padding:7px 11px;font-family:inherit;font-size:12px;font-weight:600;line-height:1;cursor:pointer;white-space:nowrap;transition:background .12s,color .12s}
+.al-b:hover{background:#004AAD;color:#fff}
+.al-b svg{width:13px;height:13px}
+.al-done{display:inline-flex;align-items:center;gap:6px;color:#15803d;font-size:12px;font-weight:600;max-width:220px;text-align:right}
+.al-done svg{width:13px;height:13px;flex:none}

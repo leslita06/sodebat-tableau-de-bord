@@ -244,6 +244,11 @@ function vTresorerie(){var W=D.weeks;
     W.map(function(w){var low=w.s1<K.seuil;return '<tr><td data-l="Semaine" class="w"><b>'+dshort(w.a)+' au '+dshort(w.b)+'</b></td><td class="r" data-l="Solde début">'+M(w.s0,1)+'</td><td class="r" data-l="Entrées">+ '+M(w.in,1)+'</td><td class="r" data-l="Sorties">'+(w.out?"- "+M(w.out,1):"0")+'</td><td class="num" data-l="Solde fin">'+M(w.s1,1)+'</td><td data-l="État">'+(low?'<span class="pill r">'+ic("triangle-alert")+'Sous le seuil</span>':'<span class="pill g">'+ic("check")+'Au-dessus du seuil</span>')+'</td></tr>';}).join("")+'</tbody>';}
 
 /* ---------- vue Alertes ---------- */
+var ALOWN={rep:["Chef d'équipe maintenance","Programmer l'expertise","wrench","Expertise programmée, technicien prévenu sur WhatsApp"],
+  ren:["Responsable commercial","Préparer la proposition","file-check","Proposition préparée, envoyée au commercial pour relecture"],
+  ch:["Conducteur de travaux","Prévenir le client","arrow-right","Client prévenu, nouvelle date envoyée par email"],
+  pub:["Recouvrement","Envoyer la relance","hand-coins","Relance envoyée au service financier du client"]},ALDONE={};
+document.addEventListener("click",function(e){var b=e.target.closest("[data-al]");if(!b)return;ALDONE[b.getAttribute("data-al")]=ALOWN[b.getAttribute("data-ak")][3];vAlertes();});
 function alerts(){var out=[];
   var rep=D.rep.filter(function(r){return inZs(r.z);});
   out.push({k:"rep",ic:"repeat",c:"r",t:"Pannes répétées",s:"3 pannes ou plus en 30 jours sur le même appareil, 12 derniers mois",
@@ -262,9 +267,9 @@ function vAlertes(){var A=alerts(),tot=A.reduce(function(a,x){return a+x.items.l
   $("a-seg").innerHTML=[["all","Toutes",tot]].concat(A.map(function(a){return [a.k,a.t.replace("Contrats à risque de non-renouvellement","Contrats à risque").replace("Impayés des établissements publics","Impayés publics"),a.items.length];})).map(function(s){return '<button data-as="'+s[0]+'" class="'+(state.aseg==s[0]?"on":"")+'">'+s[1]+' <span class="c">'+s[2]+'</span></button>';}).join("");
   var all=state.z=="all";
   $("lede-a").innerHTML="<b>"+tot+" alertes</b> ouvertes. "+(all?"Les établissements publics doivent <span class=\"r\">"+M(K.echu_pub,1)+" FCFA</span>, soit près des deux tiers des créances échues ; deux immeubles cumulent pannes répétées et risque de non-renouvellement : Les Acajous et l'Hôtel Les Aigrettes.":"")+zchip();
-  $("a-list").innerHTML=A.filter(function(a){return state.aseg=="all"||a.k==state.aseg;}).map(function(a){
+  $("a-list").innerHTML='<div class="al-ban">'+ic("bell-ring")+'<div><b>Chaque matin à 7 h</b>, ces alertes partent par email à la direction et par WhatsApp au responsable de chaque ligne. Un clic sur l\'action la confie et la trace ici.</div></div>'+A.filter(function(a){return state.aseg=="all"||a.k==state.aseg;}).map(function(a){
     return '<div class="card al"><div class="al-h"><span class="ic '+(a.c=="a"?"a":"")+'">'+ic(a.ic)+'</span><div><p class="t">'+a.t+'</p><p class="s">'+a.s+'</p></div><span class="n">'+a.items.length+'</span></div>'+
-      (a.items.length?a.items.map(function(i){return '<div class="li"><div><p class="nm">'+i.t+'</p><p class="mt2">'+i.s+'</p></div><div class="rr">'+(i.m?'<span class="amt">'+M(i.m,i.m<1e7?2:1)+'</span>':'')+'<span class="pill '+i.tag[0]+'">'+i.tag[1]+'</span></div></div>';}).join(""):'<p class="empty">Aucune alerte dans cette zone.</p>')+'</div>';}).join("");
+      (a.items.length?a.items.map(function(i,n){var O=ALOWN[a.k],key=a.k+n,done=ALDONE[key];return '<div class="li li-al"><div><p class="nm">'+i.t+'</p><p class="mt2">'+i.s+'</p><p class="al-own">'+ic("users")+'Suivi : <b>'+O[0]+'</b></p></div><div class="rr">'+(i.m?'<span class="amt">'+M(i.m,i.m<1e7?2:1)+'</span>':'')+'<span class="pill '+i.tag[0]+'">'+i.tag[1]+'</span>'+(done?'<span class="al-done">'+ic("check")+done+'</span>':'<button type="button" class="al-b" data-al="'+key+'" data-ak="'+a.k+'">'+ic(O[2])+(/envoy/.test(i.tag[1])?"Relancer le client":O[1])+'</button>')+'</div></div>';}).join(""):'<p class="empty">Aucune alerte dans cette zone.</p>')+'</div>';}).join("");
   var P=D.pub.filter(function(p){return inZs(p.z);});
   mk("c-pub",{type:"bar",data:{labels:P.map(function(p){return p.client.replace("Immeuble administratif","Imm. administratif").replace("Clinique Les Tecks Bouaké","Clinique Les Tecks");}),datasets:[{data:P.map(function(p){return p.m/1e6;}),backgroundColor:["#C8352B","#E07A70","#EFB2AB"],borderRadius:4,barPercentage:.6}]},
     options:{indexAxis:"y",scales:{x:{grid:GRID,border:{display:false},ticks:{maxTicksLimit:5,callback:function(v){return v+" M";}}},y:{grid:NOG}},plugins:{tooltip:{callbacks:{label:function(c){return " "+dec(c.raw,2)+" M FCFA TTC";}}}}}});
